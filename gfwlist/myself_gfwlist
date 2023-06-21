@@ -1,0 +1,49 @@
+[AutoProxy 0.2.9]
+! google
+||google.com
+||googleapis.com
+||googleusercontent.com
+||googlevideo.com
+||gstatic.com
+||facebook.com
+||steampowered.com
+||steamcommunity.com
+||github.com
+||github.io
+||githubassets.com
+||githubusercontent.com
+||akamaihd.net
+||steamstatic.com
+||steam.tv
+||v2ex.com
+||hostloc.com
+||jetbrains.com
+||gravatar.com
+||googleapis.com
+||1ups.top
+||youtube.com
+||ytimg.com
+||ggpht.com
+||spring.io
+||facebook.net
+||telegram.org
+||openai.com
+||doubibackup.com
+||sms-activate.org
+||docker.com
+||segment.io
+
+! proxy
+||v2fly.org
+||v2raya.org
+||v2ray.com
+||v2ray.cool
+
+! bbs
+||bbc.com
+||bbci.co.uk
+||abc.net.au
+||voachinese.com
+||wikipedia.org
+||gitbook.io
+! bbs end

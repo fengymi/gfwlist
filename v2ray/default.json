@@ -1,0 +1,52 @@
+[
+  {
+    "inboundTag": [],
+    "outboundTag": "proxy",
+    "domain": [
+      "domain:google.com",
+      "domain:googleapis.com",
+      "domain:googleusercontent.com",
+      "domain:gstatic.com",
+      "domain:facebook.com",
+      "domain:steampowered.com",
+      "domain:steamcommunity.com",
+      "domain:github.com",
+      "domain:github.io",
+      "domain:akamaihd.net",
+      "domain:steamstatic.com",
+      "domain:steam.tv",
+      "domain:v2ex.com",
+      "domain:hostloc.com",
+      "domain:jetbrains.com",
+      "domain:gravatar.com",
+      "domain:googleapis.com",
+      "domain:1ups.top",
+      "domain:youtube.com",
+      "domain:spring.io",
+      "domain:facebook.net",
+      "domain:telegram.org",
+      "domain:openai.com",
+      "domain:doubibackup.com",
+      "domain:sms-activate.org",
+      "domain:bbc.com",
+      "domain:bbci.co.uk",
+      "domain:abc.net.au",
+      "domain:voachinese.com",
+      "domain:wikipedia.org",
+      "domain:gitbook.io"
+    ],
+    "enabled": true
+  },
+  {
+    "outboundTag": "block",
+    "domain": [
+      "geosite:category-ads-all"
+    ],
+    "enabled": true
+  },
+  {
+    "port": "0-65535",
+    "outboundTag": "direct",
+    "enabled": true
+  }
+]
