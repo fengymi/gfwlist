@@ -1,4 +1,4 @@
-### 自己配置文件地址: https://gitee.com/fengymi/gfwlist/raw/master/myself_gfwlist_base
+### 自己配置文件地址: https://gitee.com/fengymi/gfwlist/raw/myself/myself/gfwlist/myself_gfwlist_base
 
 <br/>
 
