@@ -1,2 +1,3 @@
-DOMAIN-SUFFIX,youtube.com,REJECT
-DOMAIN-SUFFIX,google.com,HK
+payload:
+  DOMAIN-SUFFIX,youtube.com,REJECT
+  DOMAIN-SUFFIX,google.com,HK
