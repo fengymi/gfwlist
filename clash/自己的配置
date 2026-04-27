@@ -1,0 +1,173 @@
+# -------------------------------------------------------------------
+# 1. 基础设置与混合端口监听
+# -------------------------------------------------------------------
+mixed-port: 7890
+allow-lan: true
+mode: rule
+log-level: info
+ipv6: false
+
+# 开启自定义端口监听
+listeners:
+  - name: mixed-direct
+    type: mixed
+    listen: 0.0.0.0
+    port: 1180
+    proxy: Self-Direct
+    users: []
+
+  - name: mixed-proxy
+    type: mixed
+    listen: 0.0.0.0
+    port: 1181
+    proxy: proxy
+    users: []
+
+  - name: mixed-overseas
+    type: mixed
+    listen: 0.0.0.0
+    port: 1182
+    proxy: proxy-overseas
+    users: []
+
+# -------------------------------------------------------------------
+# 2. 节点提供者 (Proxy Provider - 解决动态机场问题)
+# -------------------------------------------------------------------
+proxy-providers:
+  my_airport:
+    type: http
+    url: "xx"
+    path: ./proxy_providers/airport.yaml
+    interval: 3600
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 300
+
+# -------------------------------------------------------------------
+# 4. 代理分组 (使用 use 引用 Provider 并筛选)
+# -------------------------------------------------------------------
+proxy-groups:
+  # 2.1 全部代理，延迟最低
+  - name: proxy
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    use:
+      - my_airport
+
+  # 2.2 中国 香港|台湾 最快
+  - name: proxy-china
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    use:
+      - my_airport
+    filter: "(?i)香港|HK|Hong Kong|台湾|TW|Taiwan"
+
+  # 2.3 非中国 境外最快
+  - name: proxy-overseas
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    use:
+      - my_airport
+    filter: "(?i)美国|US|United States|新加坡|SG|Singapore|日本|JP|Japan"
+
+  # 2.4 直连
+  - name: "Self-Direct"
+    type: select
+    url: http://www.gstatic.com/generate_204
+    proxies:
+    - DIRECT
+    - proxy
+
+# -------------------------------------------------------------------
+# 3. 远程规则集定义 (Rule Providers)
+# -------------------------------------------------------------------
+rule-providers:
+  proxy_self_list:
+    type: http
+    behavior: domain
+    url: "https://raw.giteeusercontent.com/fengymi/gfwlist/raw/myself/myself/gfwlist/gfw-self-proxy-clash.txt"
+    path: ./ruleset/proxy_self_list.yaml
+    interval: 86400
+  proxy_list:
+    type: http
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/proxy.txt"
+    path: ./ruleset/proxy_list.yaml
+    interval: 86400
+  private:
+    type: http
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/private.txt"
+    path: ./ruleset/private.yaml
+    interval: 86400
+  gfw:
+    type: http
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/gfw.txt"
+    path: ./ruleset/gfw.yaml
+    interval: 86400
+  tld-not-cn:
+    type: http
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/tld-not-cn.txt"
+    path: ./ruleset/tld-not-cn.yaml
+    interval: 86400
+  telegramcidr:
+    type: http
+    behavior: ipcidr
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/telegramcidr.txt"
+    path: ./ruleset/telegramcidr.yaml
+    interval: 86400
+  cncidr:
+    type: http
+    behavior: ipcidr
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/cncidr.txt"
+    path: ./ruleset/cncidr.yaml
+    interval: 86400
+  lancidr:
+    type: http
+    behavior: ipcidr
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/lancidr.txt"
+    path: ./ruleset/lancidr.yaml
+    interval: 86400
+  applications:
+    type: http
+    behavior: classical
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/applications.txt"
+    path: ./ruleset/applications.yaml
+    interval: 86400
+
+# -------------------------------------------------------------------
+# 5. 路由规则
+# -------------------------------------------------------------------
+rules:
+  # 端口强制分流优先
+  - IN-PORT,1180,DIRECT
+  - IN-PORT,1181,proxy
+  - IN-PORT,1182,proxy-overseas
+
+  # 自定义规则
+  - RULE-SET,proxy_self_list,proxy
+
+  # 基础应用与私有网络直连
+  - RULE-SET,applications,DIRECT
+  - RULE-SET,private,DIRECT
+  - RULE-SET,lancidr,DIRECT
+  
+  # GFWList & 代理列表
+  - RULE-SET,gfw,proxy
+  - RULE-SET,tld-not-cn,proxy
+  - RULE-SET,proxy_list,proxy
+  - RULE-SET,telegramcidr,proxy
+
+  # 国内 IP 分流
+  - RULE-SET,cncidr,DIRECT
+  - GEOIP,LAN,DIRECT
+  - GEOIP,CN,DIRECT
+  
+  # 最终兜底
+  - MATCH,DIRECT
